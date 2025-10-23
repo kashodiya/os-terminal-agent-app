@@ -1,0 +1,100 @@
+{
+  "safety_settings": {
+    "default_mode": "safe",
+    "block_critical_commands": true,
+    "require_confirmation_for_high_risk": true,
+    "max_risk_level_without_confirmation": "low"
+  },
+  "protected_paths": {
+    "windows": [
+      "C:\\Windows",
+      "C:\\Program Files",
+      "C:\\Program Files (x86)",
+      "C:\\System Volume Information",
+      "C:\\$Recycle.Bin"
+    ],
+    "unix": [
+      "/bin",
+      "/sbin",
+      "/usr/bin",
+      "/usr/sbin",
+      "/etc",
+      "/boot",
+      "/sys",
+      "/proc",
+      "/dev",
+      "/root",
+      "/lib",
+      "/lib64"
+    ]
+  },
+  "dangerous_commands": {
+    "critical": [
+      "format c:",
+      "rm -rf /",
+      "del /s /q c:\\",
+      "dd if=/dev/zero",
+      "mkfs",
+      "fdisk /mbr"
+    ],
+    "high_risk": [
+      "del",
+      "rm",
+      "rmdir",
+      "format",
+      "shutdown",
+      "reboot",
+      "reg delete",
+      "chmod 777",
+      "chown root"
+    ],
+    "medium_risk": [
+      "reg",
+      "netsh",
+      "sc",
+      "systemctl",
+      "service",
+      "mount",
+      "umount"
+    ]
+  },
+  "safe_commands": [
+    "dir",
+    "ls",
+    "pwd",
+    "cd",
+    "echo",
+    "type",
+    "cat",
+    "head",
+    "tail",
+    "find",
+    "grep",
+    "ps",
+    "top",
+    "df",
+    "du",
+    "whoami",
+    "date",
+    "uptime"
+  ],
+  "destructive_flags": [
+    "-rf",
+    "/s /q",
+    "-recurse",
+    "-force",
+    "--force",
+    "-y",
+    "/y"
+  ],
+  "protected_extensions": [
+    ".exe",
+    ".dll",
+    ".sys",
+    ".bat",
+    ".cmd",
+    ".ps1",
+    ".sh",
+    ".bash"
+  ]
+}

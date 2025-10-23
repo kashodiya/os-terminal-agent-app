@@ -1,0 +1,5 @@
+trands-agents
+click
+boto3
+fastapi
+uvicorn[standard]
