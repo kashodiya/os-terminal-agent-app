@@ -40,9 +40,32 @@ async def call_agent(user_message: str, websocket):
         
         if result['success']:
             await websocket.send_text(json.dumps({"type": "chunk", "content": f"\n💡 Command: {result['command_used']}"}))
+            
+            # Send command output if available
+            if result.get('raw_output') and (result['raw_output'].get('stdout') or result['raw_output'].get('stderr')):
+                output_content = ""
+                if result['raw_output'].get('stdout'):
+                    output_content += result['raw_output']['stdout']
+                if result['raw_output'].get('stderr'):
+                    if output_content:
+                        output_content += "\n"
+                    output_content += result['raw_output']['stderr']
+                
+                await websocket.send_text(json.dumps({
+                    "type": "command_output", 
+                    "content": output_content
+                }))
+            
             await websocket.send_text(json.dumps({"type": "chunk", "content": f"\n📝 Answer: {result['answer']}"}))
         else:
             await websocket.send_text(json.dumps({"type": "chunk", "content": f"\n❌ {result['answer']}"}))
+            
+            # Send error output if available
+            if result.get('raw_output') and result['raw_output'].get('stderr'):
+                await websocket.send_text(json.dumps({
+                    "type": "command_output", 
+                    "content": result['raw_output']['stderr']
+                }))
             
     except Exception as e:
         await websocket.send_text(json.dumps({"type": "chunk", "content": f"Error: {str(e)}"}))

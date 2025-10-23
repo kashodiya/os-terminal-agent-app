@@ -12,6 +12,16 @@
             word-wrap: break-word;
             padding: 8px 0;
         }
+        .command-output {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 12px;
+            border-radius: 4px;
+            margin: 8px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+        }
     </style>
 </head>
 <body>
@@ -40,11 +50,11 @@
                                 <v-chip small :color="message.type === 'user' ? 'primary' : 'secondary'" class="mb-1">
                                     {{ message.type === 'user' ? 'You' : 'Agent' }}
                                 </v-chip>
-                                <div class="message-content" v-html="message.content"></div>
+                                <div class="message-content" v-html="renderContent(message.content)"></div>
                             </div>
                             <div v-if="isTyping" class="mb-3">
                                 <v-chip small color="secondary" class="mb-1">Agent</v-chip>
-                                <div class="message-content">{{ currentResponse }}</div>
+                                <div class="message-content" v-html="renderContent(currentResponse)"></div>
                             </div>
                         </v-card-text>
                         <v-card-actions>
@@ -81,6 +91,7 @@
     <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vuetify@2.6.0/dist/vuetify.js"></script>
     <script src="https://unpkg.com/vue-router@3/dist/vue-router.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
         const Home = {
             template: '#home-template',
@@ -110,6 +121,9 @@
                         
                         if (data.type === 'chunk') {
                             this.currentResponse += data.content;
+                        } else if (data.type === 'command_output') {
+                            this.currentResponse += '\n\n📤 Command Output:\n';
+                            this.currentResponse += '<pre class="command-output">' + this.escapeHtml(data.content) + '</pre>';
                         } else if (data.type === 'complete') {
                             this.messages.push({
                                 type: 'agent',
@@ -147,6 +161,19 @@
                     if (container) {
                         container.scrollTop = container.scrollHeight;
                     }
+                },
+                escapeHtml(text) {
+                    const div = document.createElement('div');
+                    div.textContent = text;
+                    return div.innerHTML;
+                },
+                renderContent(content) {
+                    if (!content) return '';
+                    // Check if content contains markdown patterns
+                    if (content.includes('**') || content.includes('##') || content.includes('```') || content.includes('- ')) {
+                        return marked.parse(content);
+                    }
+                    return content;
                 }
             }
         };
